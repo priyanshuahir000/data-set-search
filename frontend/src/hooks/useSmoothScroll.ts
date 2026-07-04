@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import Lenis from 'lenis';
 
 // A light, subtle smooth scroll. Lenis drives the real window scroll (it does not
@@ -6,11 +6,18 @@ import Lenis from 'lenis';
 // sheet all keep working. Touch scrolling is left native, and we bail out entirely
 // when the user prefers reduced motion. Inner scrollers opt out with
 // data-lenis-prevent.
-export function useSmoothScroll() {
+//
+// Returns a `setLocked` control: because Lenis handles wheel/trackpad scrolling
+// itself, `body { overflow: hidden }` alone does NOT stop the page scrolling
+// behind a modal — the sheet must call lenis.stop() too.
+export function useSmoothScroll(): (locked: boolean) => void {
+  const lenisRef = useRef<Lenis | null>(null);
+
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const lenis = new Lenis({ lerp: 0.12, wheelMultiplier: 1 });
+    lenisRef.current = lenis;
 
     let frame = 0;
     const loop = (time: number) => {
@@ -22,6 +29,14 @@ export function useSmoothScroll() {
     return () => {
       cancelAnimationFrame(frame);
       lenis.destroy();
+      lenisRef.current = null;
     };
+  }, []);
+
+  return useCallback((locked: boolean) => {
+    const lenis = lenisRef.current;
+    if (!lenis) return;
+    if (locked) lenis.stop();
+    else lenis.start();
   }, []);
 }

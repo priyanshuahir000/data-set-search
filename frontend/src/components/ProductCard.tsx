@@ -1,66 +1,130 @@
 import { useState } from 'react';
 import type { Product } from '../types';
+import { useCart } from '../cart';
+import {
+  badgeFor,
+  compact,
+  categoryInk,
+  categoryTint,
+  deriveMrp,
+  isNew,
+  money,
+  typeIcon,
+} from '../taxonomy';
 import { Highlight } from './Highlight';
-import { RatingStars } from './RatingStars';
+import { Sym } from './Sym';
 
-const money = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  maximumFractionDigits: 0,
-});
+const BADGE_TEXT: Record<'bestseller' | 'coming' | 'out', string> = {
+  bestseller: 'Bestseller',
+  coming: 'Coming soon',
+  out: 'Out of stock',
+};
 
 interface ProductCardProps {
   product: Product;
-  tokens: string[];
+  tokens?: string[];
   index?: number;
 }
 
-export function ProductCard({ product, tokens, index = 0 }: ProductCardProps) {
-  const [imageFailed, setImageFailed] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
+export function ProductCard({ product, tokens = [], index = 0 }: ProductCardProps) {
+  const { qty, add, dec } = useCart();
+  const [imgFailed, setImgFailed] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
+
+  const id = String(product.id);
+  const q = qty(id);
+  const out = !product.inStock;
+  const soon = product.isFuture;
+  const badge = badgeFor(product);
+
+  const tint = categoryTint(product.category);
+  const ink = categoryInk(product.category);
+  const icon = typeIcon(product.productType);
+
+  const mrp = deriveMrp(product);
+  const off = mrp - Math.round(product.price);
+  const showDiscount = off > 0 && !out;
+
+  const showRating = product.reviews > 0;
+  const showNew = isNew(product);
+
+  const canBuy = !out && !soon;
 
   return (
-    <article className="card card-enter" style={{ animationDelay: `${index * 35}ms` }}>
-      <div className="card-media">
-        {product.image && !imageFailed ? (
-          <img
-            className={imageLoaded ? 'is-loaded' : ''}
-            src={product.image}
-            alt={product.title}
-            loading="lazy"
-            onLoad={() => setImageLoaded(true)}
-            onError={() => setImageFailed(true)}
-          />
-        ) : (
-          <div className="card-media-fallback" aria-hidden="true">
-            {product.productType || product.category}
-          </div>
-        )}
+    <article
+      className="card"
+      style={{ animationDelay: `${(index % 10) * 35}ms` }}
+    >
+      <div className="card-media-wrap">
+        <div className="card-media" style={{ background: tint }}>
+          <span className="card-media-icon">
+            <Sym name={icon} size={64} fill={1} weight={500} color={ink} />
+          </span>
+          {product.image && !imgFailed && (
+            <img
+              className={`card-media-img${imgLoaded ? ' is-loaded' : ''}`}
+              src={product.image}
+              alt={product.title}
+              loading="lazy"
+              onLoad={() => setImgLoaded(true)}
+              onError={() => setImgFailed(true)}
+            />
+          )}
+          {out && <span className="card-media-dim" aria-hidden="true" />}
+          {badge && <span className={`badge badge-${badge}`}>{BADGE_TEXT[badge]}</span>}
+        </div>
 
-        {product.isFuture ? (
-          <span className="badge badge-soon">Coming soon</span>
-        ) : !product.inStock ? (
-          <span className="badge badge-out">Out of stock</span>
-        ) : null}
+        <div className="card-add">
+          {canBuy && q === 0 && (
+            <button className="add-btn" onClick={() => add(product)}>
+              ADD
+            </button>
+          )}
+          {canBuy && q > 0 && (
+            <div className="stepper">
+              <button className="stepper-btn" onClick={() => dec(id)} aria-label="Remove one">
+                −
+              </button>
+              <span className="stepper-qty">{q}</span>
+              <button className="stepper-btn" onClick={() => add(product)} aria-label="Add one">
+                +
+              </button>
+            </div>
+          )}
+          {!canBuy && (
+            <button className="notify-btn" onClick={() => {}}>
+              Notify me
+            </button>
+          )}
+        </div>
       </div>
 
-      <div className="card-body">
-        <div className="card-brand">{product.brand}</div>
-        <h3 className="card-title">
-          <Highlight text={product.title} tokens={tokens} />
-        </h3>
-        {(product.material || product.productType) && (
-          <div className="card-meta">
-            {product.material && <span>{product.material}</span>}
-            {product.material && product.productType && <span className="dot" aria-hidden="true" />}
-            {product.productType && <span>{product.productType}</span>}
-          </div>
-        )}
-
-        <div className="card-footer">
-          <span className="card-price">{money.format(product.price)}</span>
-          <RatingStars rating={product.rating} reviews={product.reviews} />
+      <div className="card-priceline">
+        <span className="price-pill">{money(product.price)}</span>
+        {showDiscount && <span className="mrp">{money(mrp)}</span>}
+      </div>
+      {showDiscount && (
+        <div className="off-row">
+          <span className="off-text">{money(off)} OFF</span>
+          <span className="off-leader" aria-hidden="true" />
         </div>
+      )}
+
+      <h3 className="card-title">
+        <Highlight text={product.title} tokens={tokens} />
+      </h3>
+      <div className="card-brand">{product.brand}</div>
+
+      <div className="card-meta">
+        {product.material && <span className="material-chip">{product.material}</span>}
+        {showRating && (
+          <span className="card-rating">
+            <span className="card-star">★</span>
+            {product.rating.toFixed(1)}
+            <span className="card-reviews">({compact(product.reviews)})</span>
+          </span>
+        )}
+        {showNew && <span className="new-chip">NEW</span>}
       </div>
     </article>
   );

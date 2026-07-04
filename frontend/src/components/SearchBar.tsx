@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Suggestion } from '../types';
-import { IconArrowRight, IconClose, IconSearch } from './Icons';
+import { compact, TRENDING } from '../taxonomy';
+import { Sym } from './Sym';
 
 interface SearchBarProps {
   value: string;
@@ -9,7 +10,7 @@ interface SearchBarProps {
   suggestions: Suggestion[];
 }
 
-const kindLabel: Record<Suggestion['kind'], string> = {
+const KIND_LABEL: Record<Suggestion['kind'], string> = {
   product: '',
   productType: 'Type',
   brand: 'Brand',
@@ -31,24 +32,20 @@ export function SearchBar({ value, onChange, onSubmit, suggestions }: SearchBarP
     return () => document.removeEventListener('mousedown', onClickOutside);
   }, []);
 
-  useEffect(() => {
-    setActive(-1);
-  }, [suggestions]);
+  useEffect(() => setActive(-1), [suggestions]);
 
-  const choose = (s: Suggestion) => {
-    onChange(s.label);
-    onSubmit(s.label);
+  const run = (q: string) => {
+    onSubmit(q);
     setOpen(false);
   };
 
-  const submit = () => {
-    onSubmit(value);
-    setOpen(false);
+  const choose = (s: Suggestion) => {
+    onChange(s.label);
+    run(s.label);
   };
 
   const clear = () => {
     onChange('');
-    onSubmit('');
     setOpen(false);
   };
 
@@ -61,27 +58,26 @@ export function SearchBar({ value, onChange, onSubmit, suggestions }: SearchBarP
       e.preventDefault();
       setActive((a) => Math.max(a - 1, -1));
     } else if (e.key === 'Enter') {
-      if (open && active >= 0 && suggestions[active]) {
-        choose(suggestions[active]!);
-      } else {
-        submit();
-      }
+      if (open && active >= 0 && suggestions[active]) choose(suggestions[active]!);
+      else run(value);
     } else if (e.key === 'Escape') {
       setOpen(false);
     }
   };
 
-  const showSuggestions = open && focused && suggestions.length > 0;
+  const showSuggest = open && focused && value.trim().length > 0 && suggestions.length > 0;
+  const showTrending = open && focused && value.trim().length === 0;
 
   return (
-    <div className={`searchbar ${focused ? 'is-focused' : ''}`} ref={wrapRef}>
-      <span className="searchbar-icon" aria-hidden="true">
-        <IconSearch size={20} />
+    <div className="searchbar" ref={wrapRef}>
+      <span className="searchbar-icon">
+        <Sym name="search" size={21} color="#0A7A32" />
       </span>
       <input
         className="searchbar-input"
         type="text"
-        placeholder="Search for a lamp, oak shelf, vintage rug..."
+        name="q"
+        placeholder={'Search “oak shelf”, “vase under 300”, “marble”…'}
         value={value}
         autoComplete="off"
         spellCheck={false}
@@ -100,36 +96,58 @@ export function SearchBar({ value, onChange, onSubmit, suggestions }: SearchBarP
 
       {value && (
         <button className="searchbar-clear" onClick={clear} aria-label="Clear search" type="button">
-          <IconClose size={15} />
+          <Sym name="close" size={16} />
         </button>
       )}
-      <button className="searchbar-submit" onClick={submit} aria-label="Search" type="button">
-        <IconArrowRight size={18} />
+      <button className="searchbar-submit" onClick={() => run(value)} aria-label="Search" type="button">
+        <Sym name="arrow_forward" size={20} color="#fff" />
       </button>
 
-      {showSuggestions && (
+      {showSuggest && (
         <ul className="suggestions" role="listbox" data-lenis-prevent>
           {suggestions.map((s, i) => (
             <li
               key={`${s.kind}:${s.label}`}
               role="option"
               aria-selected={i === active}
-              className={`suggestion ${i === active ? 'active' : ''}`}
+              className={`suggestion${i === active ? ' active' : ''}`}
               onMouseEnter={() => setActive(i)}
               onMouseDown={(e) => {
                 e.preventDefault();
                 choose(s);
               }}
             >
-              <span className="suggestion-icon" aria-hidden="true">
-                <IconSearch size={15} />
+              <span className="suggestion-icon">
+                <Sym name="search" size={18} color="#9AA39B" />
               </span>
               <span className="suggestion-label">{s.label}</span>
-              {s.kind !== 'product' && <span className="suggestion-kind">{kindLabel[s.kind]}</span>}
-              {s.count != null && <span className="suggestion-count">{s.count.toLocaleString()}</span>}
+              {s.kind !== 'product' && <span className="suggestion-kind">{KIND_LABEL[s.kind]}</span>}
+              {s.count != null && <span className="suggestion-count">{compact(s.count)} items</span>}
             </li>
           ))}
         </ul>
+      )}
+
+      {showTrending && (
+        <div className="trending" data-lenis-prevent>
+          <div className="trending-label">Trending searches</div>
+          <div className="trending-chips">
+            {TRENDING.map((t) => (
+              <button
+                key={t}
+                className="trending-chip"
+                type="button"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  onChange(t);
+                  run(t);
+                }}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );
