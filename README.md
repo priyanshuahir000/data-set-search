@@ -126,8 +126,28 @@ lazily in small batches as you scroll, so the page stays light, with left/right
 arrows to page through each rail on pointer devices. When every type has been shown,
 an end-of-list illustration marks the bottom.
 
+<br>
+<hr>
+<br>
+
+![Home page with product rails](https://github.com/user-attachments/assets/3de336eb-a3c8-4cce-862b-16665d52f119)
+
+<br>
+<hr>
+<br>
+
 **Category** is a two-pane browse: a breadcrumb, a subcategory list with live counts
 down the left (a horizontal pill scroller on mobile), and the products on the right.
+
+<br>
+<hr>
+<br>
+
+![Selected category view](https://github.com/user-attachments/assets/4436444c-9cd3-4e42-8d5d-27ff4e904eac)
+
+<br>
+<hr>
+<br>
 
 **Search** is the workhorse. Autocomplete updates as you type (with trending searches
 when the box is empty), but the results move only when you submit (Enter, the search
@@ -139,6 +159,16 @@ natural-language query ("vase under 300") surface as "reading your search as" ch
 soft-constraint matches float to the top of the results, and there are real empty and
 error states, a "did you mean" / auto-correction path, and a "Show more" pager.
 
+<br>
+<hr>
+<br>
+
+![Search results with filters and chips](https://github.com/user-attachments/assets/02f047d8-00d2-46d2-8b07-55e202b043c8)
+
+<br>
+<hr>
+<br>
+
 Every product card shows the image (with a category-tinted icon as a graceful
 fallback), price, rating, material, and status badges (bestseller, coming soon, out
 of stock, new). Adding to the cart turns the button into a quantity stepper, and a
@@ -146,11 +176,23 @@ sticky bar tracks the running subtotal. The cart is client-side and the striketh
 "compare-at" price is derived per product — the real catalog has neither, so both are
 isolated in the frontend and easy to remove.
 
+<br>
+<hr>
+<br>
+
+![End of search result](https://github.com/user-attachments/assets/39892fad-4d62-4d62-acf8-4d55df1422c1)
+
+<br>
+<hr>
+<br>
+
 The layout is responsive: on tablet and mobile the search drops to its own row, the
 category rail becomes a pill scroller, and the filter rail is replaced by a Filters
 button that opens a bottom sheet. View changes show brief shimmer skeletons, and
 scrolling has a light smooth-scroll (Lenis) that backs off when the user prefers
 reduced motion.
+
+<br>
 
 ## Notes
 
