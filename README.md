@@ -1,20 +1,21 @@
-# Home goods discovery
+# Maison — home goods discovery
 
-A small product discovery page for a catalog of about 4,000 home goods. You search,
-you get ranked results, and you can narrow things down with filters that always show
-live counts. The search is the point, so most of the work sits in the backend: a
-normalized SQLite database with a full text index, ranked results, synonym handling,
-typo correction, and natural-language intent parsing so a query like "towel under
-200" understands the price and prioritizes accordingly.
+**Maison** is a small quick-commerce–style storefront for a catalog of about 4,000
+home goods. You can browse by category, scroll curated product rails on the home
+page, or search and get ranked results — and narrow things down with filters that
+always show live counts. The search is still the point, so most of the work sits in
+the backend: a normalized SQLite database with a full text index, ranked results,
+synonym handling, typo correction, and natural-language intent parsing so a query
+like "towel under 200" understands the price and prioritizes accordingly.
 
 The stack is a React frontend and a Node API, kept in separate folders.
 
 ## What is in the box
 
 ```
-home-goods-discovery/
+maison/
   backend/     Node + Express + TypeScript API, SQLite (better-sqlite3) with FTS5
-  frontend/    React + Vite + TypeScript UI
+  frontend/    React + Vite + TypeScript UI 
   DECISIONS.md every meaningful choice and the reason for it
 ```
 
@@ -95,8 +96,9 @@ version: text relevance from BM25 decides most of the order, and product quality
 strong keyword match always wins over a popular item that does not really match.
 
 The response includes `appliedQuery` (the text after intent was removed),
-`understood` (the constraints read from the query), and `partition` (where to draw
-the "more results" divider), alongside the items, totals, and live facets.
+`understood` (the constraints read from the query, which the UI shows as chips), and
+`partition` (the split between the items that satisfy the query's soft constraints and
+the rest), alongside the items, totals, and live facets.
 
 Endpoints:
 
@@ -114,19 +116,41 @@ GET /api/health
 
 ### UI
 
-The frontend is a single page: a prominent search box with autocomplete, a filter
-rail with live counts, a sort control, and a result grid. Autocomplete updates as
-you type, but the results move only when you submit (Enter, the search button, or a
-suggestion), which keeps the page calm. Requests are kept in order with an abort
-controller, matched words are highlighted, and there are real empty and zero result
-states including a "did you mean" path. Results load with infinite scroll, and when
-the query carries a soft constraint the grid shows a labeled divider between the
-matches and the rest.
+The frontend is a storefront with three views, all wired to the same API. A header
+carries the search box and a category bar that morphs on scroll: a big icon strip at
+the top of the home page that collapses into compact tabs as you scroll down.
 
-The layout puts the filter rail flush on the left with the products to its right.
-On tablet and mobile the rail is replaced by a Filters button that opens a bottom
-sheet. Scrolling has a light smooth-scroll (Lenis) that backs off when the user
-prefers reduced motion.
+**Home** opens on a couple of promo banners and then a series of product rails, one
+per product type ("Table Lamps", "Vases", "Side Tables", …). The rails are revealed
+lazily in small batches as you scroll, so the page stays light, with left/right
+arrows to page through each rail on pointer devices. When every type has been shown,
+an end-of-list illustration marks the bottom.
+
+**Category** is a two-pane browse: a breadcrumb, a subcategory list with live counts
+down the left (a horizontal pill scroller on mobile), and the products on the right.
+
+**Search** is the workhorse. Autocomplete updates as you type (with trending searches
+when the box is empty), but the results move only when you submit (Enter, the search
+button, or a suggestion), which keeps the page calm. Requests are kept in order with
+an abort controller and matched words are highlighted. A filter rail with live counts
+sits on the left — category icons, material swatches, and brand monograms make the
+facets scannable — with a sort control above the grid. The constraints read out of a
+natural-language query ("vase under 300") surface as "reading your search as" chips,
+soft-constraint matches float to the top of the results, and there are real empty and
+error states, a "did you mean" / auto-correction path, and a "Show more" pager.
+
+Every product card shows the image (with a category-tinted icon as a graceful
+fallback), price, rating, material, and status badges (bestseller, coming soon, out
+of stock, new). Adding to the cart turns the button into a quantity stepper, and a
+sticky bar tracks the running subtotal. The cart is client-side and the strikethrough
+"compare-at" price is derived per product — the real catalog has neither, so both are
+isolated in the frontend and easy to remove.
+
+The layout is responsive: on tablet and mobile the search drops to its own row, the
+category rail becomes a pill scroller, and the filter rail is replaced by a Filters
+button that opens a bottom sheet. View changes show brief shimmer skeletons, and
+scrolling has a light smooth-scroll (Lenis) that backs off when the user prefers
+reduced motion.
 
 ## Notes
 
