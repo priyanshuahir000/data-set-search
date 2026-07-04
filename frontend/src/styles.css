@@ -265,19 +265,19 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
   border: none;
   background: none;
   cursor: pointer;
   padding: 0;
-  width: 78px;
+  width: 104px;
 }
 .bigtile-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 72px;
-  height: 72px;
+  width: 96px;
+  height: 96px;
   border-radius: var(--r-tile);
   background: var(--tile-bg);
   border: 1px solid var(--border-4);
@@ -288,8 +288,25 @@ button {
   border-color: #cfead7;
   transform: translateY(-3px);
 }
+/* Photo tile (the image carries its own background) */
+.bigtile-icon-img {
+  padding: 0;
+  overflow: hidden;
+  background: #fff;
+  border: none;
+}
+.bigtile:hover .bigtile-icon-img {
+  background: #fff;
+}
+.bigtile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--r-tile);
+  display: block;
+}
 .bigtile-name {
-  font-size: 12.5px;
+  font-size: 13.5px;
   font-weight: 700;
   color: #2a322b;
   text-align: center;

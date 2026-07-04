@@ -33,9 +33,9 @@ export function Header({
 
   const bigStripStyle = bigExpanded
     ? {
-        maxHeight: 122,
+        maxHeight: 164,
         opacity: 1,
-        padding: '14px 0 10px',
+        padding: '14px 0 12px',
         pointerEvents: 'auto' as const,
         transition:
           'max-height .38s cubic-bezier(.2,.7,.2,1),opacity .28s ease,padding .38s ease',
@@ -87,9 +87,15 @@ export function Header({
             <div className="bigstrip-track hs">
               {CATEGORIES.map((c) => (
                 <button key={c.name} className="bigtile" onClick={() => onOpenCategory(c.name)}>
-                  <span className="bigtile-icon">
-                    <Sym name={c.icon} size={35} fill={0} weight={500} color="#0A7A32" />
-                  </span>
+                  {c.image ? (
+                    <span className="bigtile-icon bigtile-icon-img">
+                      <img className="bigtile-img" src={c.image} alt="" loading="lazy" />
+                    </span>
+                  ) : (
+                    <span className="bigtile-icon">
+                      <Sym name={c.icon} size={35} fill={0} weight={500} color="#0A7A32" />
+                    </span>
+                  )}
                   <span className="bigtile-name">{c.name}</span>
                 </button>
               ))}

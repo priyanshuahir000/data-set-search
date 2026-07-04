@@ -10,21 +10,22 @@ export interface CategoryDef {
   tint: string; // media / tile background
   ink: string; // filled icon color on the tint
   icon: string; // Material Symbols Rounded ligature
+  image?: string; // optional photo tile for the home category strip (overrides icon)
   subs: string[]; // ordered subcategories (productType values)
 }
 
 // Order here drives the category strip / tab bar and subcategory ordering.
 export const CATEGORIES: CategoryDef[] = [
-  { name: 'Lighting', tint: '#FFF3DE', ink: '#B77914', icon: 'lightbulb', subs: ['Pendant Light', 'Table Lamp', 'Floor Lamp', 'Task Lamp', 'Lantern', 'Sconce'] },
-  { name: 'Kitchen', tint: '#E6F6EB', ink: '#178A45', icon: 'countertops', subs: ['Cutting Board', 'Serving Tray', 'Bowl', 'Mug', 'Carafe', 'Canister'] },
-  { name: 'Furniture', tint: '#F3EEE4', ink: '#997743', icon: 'chair', subs: ['Dining Chair', 'Lounge Chair', 'Side Table', 'Coffee Table', 'Shelf Unit', 'Bench', 'Sideboard'] },
-  { name: 'Textiles', tint: '#FCEBEF', ink: '#C05877', icon: 'dry_cleaning', subs: ['Tea Towel', 'Throw Blanket', 'Area Rug', 'Table Runner', 'Bath Mat'] },
-  { name: 'Storage', tint: '#E9F0FB', ink: '#4A6FB5', icon: 'inventory_2', subs: ['Crate', 'Bin', 'Magazine Rack', 'Storage Basket', 'Wall Hook'] },
-  { name: 'Bath', tint: '#E4F5F6', ink: '#2A90A2', icon: 'bathtub', subs: ['Soap Dish', 'Towel Bar', 'Bath Mat', 'Tumbler'] },
-  { name: 'Decor', tint: '#F1EBFA', ink: '#7B58BE', icon: 'local_florist', subs: ['Vase', 'Candle Holder', 'Bookend', 'Mirror', 'Planter'] },
-  { name: 'Office', tint: '#ECEFF2', ink: '#5B6875', icon: 'edit', subs: ['Desk Organizer', 'Letter Tray', 'Pen Holder', 'Bookstand'] },
-  { name: 'Outdoor', tint: '#E8F6E4', ink: '#4C9C3B', icon: 'yard', subs: ['Planter Box', 'Garden Stool', 'Doormat', 'Watering Can'] },
-  { name: 'Wall Art', tint: '#FBEEE1', ink: '#C4793A', icon: 'image', subs: ['Framed Print', 'Canvas', 'Poster', 'Woven Hanging', 'Triptych'] },
+  { name: 'Lighting', tint: '#FFF3DE', ink: '#B77914', icon: 'lightbulb', image: '/cat-lighting.png', subs: ['Pendant Light', 'Table Lamp', 'Floor Lamp', 'Task Lamp', 'Lantern', 'Sconce'] },
+  { name: 'Kitchen', tint: '#E6F6EB', ink: '#178A45', icon: 'countertops', image: '/cat-kitchen.png', subs: ['Cutting Board', 'Serving Tray', 'Bowl', 'Mug', 'Carafe', 'Canister'] },
+  { name: 'Furniture', tint: '#F3EEE4', ink: '#997743', icon: 'chair', image: '/cat-furniture.png', subs: ['Dining Chair', 'Lounge Chair', 'Side Table', 'Coffee Table', 'Shelf Unit', 'Bench', 'Sideboard'] },
+  { name: 'Textiles', tint: '#FCEBEF', ink: '#C05877', icon: 'dry_cleaning', image: '/cat-textiles.png', subs: ['Tea Towel', 'Throw Blanket', 'Area Rug', 'Table Runner', 'Bath Mat'] },
+  { name: 'Storage', tint: '#E9F0FB', ink: '#4A6FB5', icon: 'inventory_2', image: '/cat-storage.png', subs: ['Crate', 'Bin', 'Magazine Rack', 'Storage Basket', 'Wall Hook'] },
+  { name: 'Bath', tint: '#E4F5F6', ink: '#2A90A2', icon: 'bathtub', image: '/cat-bath.png', subs: ['Soap Dish', 'Towel Bar', 'Bath Mat', 'Tumbler'] },
+  { name: 'Decor', tint: '#F1EBFA', ink: '#7B58BE', icon: 'local_florist', image: '/cat-decor.png', subs: ['Vase', 'Candle Holder', 'Bookend', 'Mirror', 'Planter'] },
+  { name: 'Office', tint: '#ECEFF2', ink: '#5B6875', icon: 'edit', image: '/cat-office.png', subs: ['Desk Organizer', 'Letter Tray', 'Pen Holder', 'Bookstand'] },
+  { name: 'Outdoor', tint: '#E8F6E4', ink: '#4C9C3B', icon: 'yard', image: '/cat-outdoor.png', subs: ['Planter Box', 'Garden Stool', 'Doormat', 'Watering Can'] },
+  { name: 'Wall Art', tint: '#FBEEE1', ink: '#C4793A', icon: 'image', image: '/cat-wall-art.png', subs: ['Framed Print', 'Canvas', 'Poster', 'Woven Hanging', 'Triptych'] },
 ];
 
 export const CATEGORY_BY_NAME: Record<string, CategoryDef> = Object.fromEntries(
